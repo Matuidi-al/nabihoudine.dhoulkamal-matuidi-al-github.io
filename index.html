@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Développeur Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-overlay: rgba(10, 10, 15, 0.92);
+            --bg-card: rgba(18, 18, 24, 0.85);
+            --fg: #f0f0f5;
+            --muted: #8b8ba3;
+            --accent: #00d4aa;
+            --accent-dim: rgba(0, 212, 170, 0.15);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0f6c;
+            color: var(--fg);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Background Image Setup --- */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url('F1 Car With Neon Lights.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(10, 10, 18, 0.256) 0%, rgba(10, 10, 18, 0.85) 50%, rgba(10, 10, 18, 0.95) 100%);
+        }
+
+        /* --- Utilities --- */
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeUp {
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Nav --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--fg);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 110;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 2px;
+            background: var(--fg);
+            transition: all 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(10, 10, 15, 0.98);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .nav-links.active {
+                transform: translateX(0);
+            }
+        }
+
+        /* --- Sections --- */
+        section {
+            min-height: 100vh;
+            padding: 6rem 1.5rem;
+            position: relative;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        /* --- Cards & Glass Effect --- */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+
+        /* --- Hero --- */
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--accent), #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* --- Timeline (Parcours) --- */
+        .timeline {
+            position: relative;
+            border-left: 2px solid var(--border);
+            margin-left: 1rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.6rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- Skills --- */
+        .skill-bar-container {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .skill-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #00ff88);
+            border-radius: 3px;
+            width: 0;
+            transition: width 1.5s ease;
+        }
+
+        /* --- Buttons --- */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: #0a0a0f;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--fg);
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* --- Form --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--fg);
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* --- Tabs --- */
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #0a0a0f;
+            border-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeUp 0.5s ease;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Backgrounds -->
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#accueil" class="text-xl font-bold font-mono" style="color: var(--accent);">DHOULKAMAL.N</a>
+
+            <div class="nav-links flex items-center gap-8" id="navLinks">
+                <a href="#accueil" class="nav-link active">Accueil</a>
+                <a href="#apropos" class="nav-link">À propos</a>
+                <a href="#parcours" class="nav-link">Parcours</a>
+                <a href="#competences" class="nav-link">Compétences</a>
+                <a href="#projets" class="nav-link">Projets</a>
+                <a href="#certifications" class="nav-link">Certifications</a>
+                <a href="#stage" class="nav-link">Stage</a>
+                <a href="#veille" class="nav-link">Veille</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+
+            <div class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. Accueil -->
+    <section id="accueil" class="flex items-center justify-center">
+        <div class="max-w-5xl mx-auto text-center hero-content">
+            <p class="font-mono text-sm tracking-widest mb-4 animate-fadeUp"
+                style="color: var(--accent); animation-delay: 0.1s;">BIENVENUE SUR MON PORTFOLIO</p>
+            <h1 class="animate-fadeUp" style="animation-delay: 0.3s;">Je m'appelle <span>Nabihoudine
+                    Dhoulkamal</span><br>BTS SIO - option SLAM</h1>
+
+            <div class="flex gap-4 justify-center animate-fadeUp" style="animation-delay: 0.7s;">
+                <a href="#projets" class="btn-primary">
+                    Voir mes projets
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a href="CV professionnel nabihoudine dhoulkamal.pdf"
+                    download="CV professionnel nabihoudine dhoulkamal.pdf" class="btn-outline">Cv ou lettre de
+                    motivation</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. À propos & Profile -->
+    <section id="apropos">
+        <div class="max-w-6xl mx-auto">
+            <span class="section-label reveal">À PROPOS</span>
+            <h2 class="section-title reveal">Qui suis-je ?</h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Profile Card -->
+                <div class="md:col-span-1 reveal">
+                    <div class="glass-card text-center p-8 h-full">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-2"
+                            style="border-color: var(--accent);">
+                            <!-- Placeholder image -->
+                            <img src="Natachai 🌻.jpg" alt="Photo de profil" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Nabihoudine Dhoulkamal</h3>
+                        <div class="flex justify-center gap-4 mt-4">
+                            <a href="#" class="p-2 border rounded-full transition-colors hover:bg-white/10"
+                                style="border-color: var(--border);"><svg width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
+                                    <rect x="2" y="9" width="4" height="12" />
+                                    <circle cx="4" cy="4" r="2" />
+                                </svg></a>
+                            <a href="#" class="p-2 border rounded-full transition-colors hover:bg-white/10"
+                                style="border-color: var(--border);"><svg width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="md:col-span-2 reveal" style="transition-delay: 0.2s;">
+                    <div class="glass-card h-full">
+                        <h3 class="text-xl font-bold mb-4">Mon Profile</h3>
+                        <p class="mb-4" style="color: var(--muted);">
+                            Actuellement étudiant en BTS SIO 2 années, aux Lycées Nelson Mandela - Bras-Fusil , à la
+                            Réunion, je suis passionné par le développement web et les technologies.
+                        </p>
+                        <p class="mb-6" style="color: var(--muted);">
+                            Curieux et autodidacte, je passe mon temps libre à explorer les nouvelles tendances du web,
+                            à contribuer à des projets open source et à perfectionner mes compétences en JavaScript
+                            moderne et en architecture Front-end. inspiré dans la création de site web pour les
+                            entreprises de réstauration dans l'océans-indien.
+                        </p>
+
+                        <!-- Quick Infos -->
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <div>
+                                <p class="text-sm" style="color: var(--muted);">Localisation</p>
+                                <p class="font-semibold">Saint-Denis, La Réunion</p>
+                            </div>
+                            <div>
+                                <p class="text-sm" style="color: var(--muted);">Disponibilité</p>
+                                <p class="font-semibold" style="color: var(--accent);">disponible</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Parcours Scolaire -->
+    <section id="parcours">
+        <div class="max-w-4xl mx-auto">
+            <span class="section-label reveal">PARCOURS</span>
+            <h2 class="section-title reveal">Formation & Éducation</h2>
+
+            <div class="timeline reveal">
+                <div class="timeline-item">
+                    <span class="timeline-date">2025 - 2026 (Actuelle)</span>
+                    <h3 class="text-xl font-bold">BTS SIO 2 années</h3>
+                    <p style="color: var(--muted);">Lycées Nelson Mandela - Bras-Fusil , la Réunion</p>
+                    <p class="mt-2 text-sm"></p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2024 - 2025</span>
+                    <h3 class="text-xl font-bold">BTS SIO 1 années</h3>
+                    <p style="color: var(--muted);">Lycées Nelson Mandela - Bras-Fusil , la Réunion</p>
+                    <p class="mt-2 text-sm"></p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2023 - 2024</span>
+                    <h3 class="text-xl font-bold">MC SNO</h3>
+                    <p style="color: var(--muted);">Lycée Nelson Mandela - Bras-Fusil , la Réunion</p>
+                    <p class="mt-2 text-sm">Apprentissage des fondamentaux du développement</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2020 - 2023</span>
+                    <h3 class="text-xl font-bold">Baccalauréat Général</h3>
+                    <p style="color: var(--muted);">Lycée Cité du Nord - M'tsangadoua , Mayotte</p>
+                    <p class="mt-2 text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Compétences -->
+    <section id="competences">
+        <div class="max-w-6xl mx-auto">
+            <span class="section-label reveal">COMPÉTENCES</span>
+            <h2 class="section-title reveal">Compétences</h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Hard Skills -->
+                <div class="glass-card reveal">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="color: var(--accent);">
+                            <polyline points="16 18 22 12 16 6" />
+                            <polyline points="8 6 2 12 8 18" />
+                        </svg>
+                        Hard Skills
+                    </h3>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between mb-1"><span>HTML / CSS</span><span
+                                    class="font-mono text-sm" style="color: var(--accent);">95%</span></div>
+                            <div class="skill-bar-container">
+                                <div class="skill-bar" data-width="95"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1"><span>PHP / Laravel</span><span
+                                    class="font-mono text-sm" style="color: var(--accent);">45%</span></div>
+                            <div class="skill-bar-container">
+                                <div class="skill-bar" data-width="45"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1"><span>SQL / Postgres</span><span
+                                    class="font-mono text-sm" style="color: var(--accent);">50%</span></div>
+                            <div class="skill-bar-container">
+                                <div class="skill-bar" data-width="50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soft Skills -->
+                <div class="glass-card reveal" style="transition-delay: 0.2s;">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="color: var(--accent);">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                            <path d="M16 3.13a4 4 0 010 7.75" />
+                        </svg>
+                        Soft Skills & Outils
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">Travail d'équipe</div>
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">Gestion du temps</div>
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">Résolution de pb</div>
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">Communication</div>
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">Git / GitHub</div>
+                        <div class="p-3 rounded-lg" style="background: var(--glass);">VS Code / Docker</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Projets -->
+    <section id="projets">
+        <div class="max-w-6xl mx-auto">
+            <span class="section-label reveal">PROJETS</span>
+            <h2 class="section-title reveal">Mes réalisations</h2>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project Card -->
+                <article class="glass-card reveal group overflow-hidden p-0">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://www.syloper.com/wp-content/uploads/logo_cakephp.jpg?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet formation"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">php/wamps</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">apache.js</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Bloc-app</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Tableau de bord interactif pour la
+                            visualisation de données financières en temps réel.</p>
+                        <div class="flex gap-4">
+                            <a href="Blog -App-Projet _SLAM_Nabihoudine_Dhoulkamal.pdf" class="text-sm hover:underline"
+                                style="color: var(--accent);">savoir plus</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.1s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet Code"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Laravel</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Vue.js</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Laravel</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Plateforme d'apprentissage avec système de
+                            progression et paiement Stripe.</p>
+                        <div class="flex gap-4">
+                            <a href="https://docs.google.com/document/d/1Y9A-fCNIvE6ulkUSvRqRINtEisyYOK8SCytpDDkPrJI/edit?tab=t.0"
+                                target="_blank" class="text-sm hover:underline" style="color: var(--accent);">savoir
+                                plus</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.2s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet E-commerce"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Next.js</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Prisma</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Microprojets</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Site e-commerce pour producteurs locaux
+                            avec gestion des stocks en temps réel.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--accent);">Démo live</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project Card -->
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.1s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet Code"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Laravel</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Vue.js</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">tableau sql du projet laravel</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Tableau sql après bac.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.2s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet E-commerce"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Next.js</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Prisma</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Marketplace Locale</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Site e-commerce pour producteurs locaux
+                            avec gestion des stocks en temps réel.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--accent);">Démo live</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- certifications -->
+    <section id="certifications">
+        <div class="max-w-6xl mx-auto">
+            <span class="section-label reveal">certifications</span>
+            <h2 class="section-title reveal">Mes certifications</h2>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- certification Card -->
+                <article class="glass-card reveal group overflow-hidden p-0">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet Dashboard"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">React</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Node.js</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Dashboard Analytics</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Tableau de bord interactif pour la
+                            visualisation de données financières en temps réel.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--accent);">Démo live</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.1s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet Code"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Laravel</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Vue.js</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">E-learning Platform</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Plateforme d'apprentissage avec système de
+                            progression et paiement Stripe.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--accent);">Démo live</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card reveal group overflow-hidden p-0" style="transition-delay: 0.2s;">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?crop=entropy&cs=tinysrgb&fit=crop&h=300&w=400"
+                            alt="Projet E-commerce"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex gap-2 mb-3">
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Next.js</span>
+                            <span class="text-xs px-2 py-1 rounded-full"
+                                style="background: var(--accent-dim); color: var(--accent);">Prisma</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2">Marketplace Locale</h3>
+                        <p class="text-sm mb-4" style="color: var(--muted);">Site e-commerce pour producteurs locaux
+                            avec gestion des stocks en temps réel.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-sm hover:underline" style="color: var(--accent);">Démo live</a>
+                            <a href="#" class="text-sm hover:underline" style="color: var(--muted);">GitHub</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Stage -->
+    <section id="stage">
+        <div class="max-w-4xl mx-auto">
+            <span class="section-label reveal"> STAGE</span>
+            <h2 class="section-title reveal">Rapport de Stage 2 années</h2>
+
+            <div class="glass-card reveal">
+                <div class="flex items-center gap-4 mb-6 pb-6" style="border-bottom: 1px solid var(--border);">
+                    <div class="w-16 h-16 rounded-lg flex items-center justify-center"
+                        style="background: var(--accent-dim);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                            stroke-width="1.5">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Développeur Web laravel</h3>
+                        <p style="color: var(--muted);">Département-direction du numerique des systèmes d'information et
+                            des moyens généraux - Mamoudzou 976 | Janvier 2026 à février 2026</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Missions principales</h4>
+                        <ul class="list-disc pl-5 space-y-2" style="color: var(--muted);">
+                            <li>Shéma relationnel.</li>
+                            <li>Base de données sqlite.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Environnement technique</h4>
+                        <p style="color: var(--muted);">Vue.js, Laravel, MySQL, Jira, Git.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Bilan</h4>
+                        <p style="color: var(--muted);">Ce stage m'a permis de découvrir les exigences du milieu
+                            professionnel, notamment en matière de code review et de méthodologie Agile. J'ai gagné en
+                            autonomie et en rigueur.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <a href="#" class="btn-outline text-sm">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <a href="Raport de stage nabihoudine dhoulkamal 2 années.pdf"
+                            download="Raport de stage nabihoudine dhoulkamal 2 années.pdf"
+                            class="text-sm hover:underline" style="color: var(--accent);">
+                            Télécharger le rapport complet (Google Docs)
+                        </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Stage -->
+    <section id="stage">
+        <div class="max-w-4xl mx-auto">
+            <span class="section-label reveal"> STAGE</span>
+            <h2 class="section-title reveal">Rapport de Stage 1 année</h2>
+
+            <div class="glass-card reveal">
+                <div class="flex items-center gap-4 mb-6 pb-6" style="border-bottom: 1px solid var(--border);">
+                    <div class="w-16 h-16 rounded-lg flex items-center justify-center"
+                        style="background: var(--accent-dim);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                            stroke-width="1.5">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Maintenance et réseaux</h3>
+                        <p style="color: var(--muted);">Département-direction du numerique des systèmes d'information et
+                            des moyens généraux - Mamoudzou 976 | Mai 2026 à Juin 2026</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Missions principales</h4>
+                        <ul class="list-disc pl-5 space-y-2" style="color: var(--muted);">
+                            <li>Intervention poste de travail.</li>
+                            <li>Configuration et maintenance des équipements réseaux.</li>
+                            <li>amélioration des performances des PC.
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Environnement technique</h4>
+                        <p style="color: var(--muted);">packet tracer, Cisco routers, switches</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2" style="color: var(--accent);">Bilan</h4>
+                        <p style="color: var(--muted);">Ce stage m'a permis de découvrir les exigences du milieu
+                            professionnel, notamment en matière de Shéma de réseaux </p>
+                    </div>
+                </div>
+
+                <div class="stage-download mt-8">
+                    <a href="#" class="btn-outline text-sm">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <a href="https://docs.google.com/document/d/1OEDrWxYV5kDqfzIJvNBvC7MOLUSkJFa8RySeh2sTVvU/edit?usp=sharing"
+                            download="https://docs.google.com/document/d/1OEDrWxYV5kDqfzIJvNBvC7MOLUSkJFa8RySeh2sTVvU/edit?usp=sharing"
+                            class="text-sm hover:underline" style="color: var(--accent);">
+                            Télécharger le rapport complet (Google Docs)
+                        </a>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Veille Technologique & Juridique -->
+    <section id="veille">
+        <div class="max-w-4xl mx-auto">
+            <span class="section-label reveal"> VEILLE</span>
+            <h2 class="section-title reveal">Veille Technologique & Juridique</h2>
+
+            <div class="reveal">
+                <!-- Tabs -->
+                <div class="flex gap-4 mb-8">
+                    <button class="tab-btn active" data-tab="tech">c'est quoi une veille Technologique</button>
+                    <button class="tab-btn active" data-tab="tech">Technologique</button>
+                    <button class="tab-btn" data-tab="juridique">Juridique</button>
+                </div>
+
+                <!-- Tech Content -->
+                <div id="tech" class="tab-content active">
+                    <div class="glass-card mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">En 2026, Microsoft inaugure l'ère des centres de données
+                                durables
+                            </h3>
+                        </div>
+                        <p class="text-sm mb-2" style="color: var(--muted);">Microsoft
+                            est incontestablement un bon élève de la transition écologique. La multinationale
+                            investit
+                            depuis 2013 dans les énergies renouvelables
+                            et son programme de développement durable inclut le zéro déchet et la sobriété
+                            hydrique
+                            par
+                            Mélanie Nakagawa.</p>
+                        <a href="https://www.futura-sciences.com/tech/actualites/technologie-melanie-nakagawa-nous-integrons-developpement-durable-chaque-etape-cycle-vie-centres-donnees-131629/"
+                            class="text-sm hover:underline" style="color: var(--accent);">En savoir plus</a>
+
+                        <small class="font-mono" style="color: var(--muted);"> Publié le 27 février 2026</small>
+                    </div>
+                    <div class="glass-card mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">React Server Components</h3>
+                            <span class="text-xs px-2 py-1 rounded"
+                                style="background: var(--glass); color: var(--muted);">Framework</span>
+                        </div>
+                        <p class="text-sm mb-2" style="color: var(--muted);">Comprendre le rendu côté serveur
+                            avec
+                            Next.js 14 et les avantages en performance et SEO.</p>
+                        <small class="font-mono" style="color: var(--muted);">Publié le 27 février 2026</small>
+
+                    </div>
+                </div>
+
+                <!-- Juridique Content -->
+                <div id="juridique" class="tab-content">
+                    <div class="glass-card mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">RGPD : Les nouvelles directives cookies</h3>
+                            <span class="text-xs px-2 py-1 rounded"
+                                style="background: var(--accent-dim); color: var(--accent);">Important</span>
+                        </div>
+                        <p class="text-sm mb-2" style="color: var(--muted);">Mise à jour sur le consentement
+                            explicite
+                            et l'interdiction des "dark patterns" dans les bannières cookies.</p>
+                        <small class="font-mono" style="color: var(--muted);">Date: 05/01/2024</small>
+                    </div>
+                    <div class="glass-card mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold">Loi AI Act de l'Union Européenne</h3>
+                            <span class="text-xs px-2 py-1 rounded"
+                                style="background: var(--glass); color: var(--muted);">Régulation</span>
+                        </div>
+                        <p class="text-sm mb-2" style="color: var(--muted);">Implications pour les développeurs
+                            utilisant ou créant des systèmes d'intelligence artificielle.</p>
+                        <small class="font-mono" style="color: var(--muted);">Date: 20/12/2023</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Contact -->
+    <section id="contact">
+        <div class="max-w-4xl mx-auto">
+            <span class="section-label reveal"> CONTACT</span>
+            <h2 class="section-title reveal">Mon Contact</h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Infos -->
+                <div class="glass-card reveal flex flex-col justify-center">
+                    <p class="mb-6" style="color: var(--muted);">Je suis actuellement ouvert aux opportunités de stage
+                        et d'alternance. N'hésitez pas à me contacter.</p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                                style="background: var(--accent-dim);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                    stroke-width="2">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs" style="color: var(--muted);">Email</p>
+                                <p class="font-medium">nabihoudinedhoulkamal4@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                                style="background: var(--accent-dim);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)"
+                                    stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs" style="color: var(--muted);">Localisation</p>
+                                <p class="font-medium">saint-denis, Reunion</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form class="glass-card reveal" id="contactForm" style="transition-delay: 0.2s;">
+                    <div class="form-group">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-input" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telephone</label>
+                        <input type="tel" class="form-input" placeholder="Votre numéro de téléphone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="votre@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-input" rows="4" placeholder="Votre message..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary w-full justify-center">
+                        Envoyer
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Conçu avec passion par Jean Dupont - 2024</p>
+    </footer>
+
+    <script>
+        // --- Hamburger Menu ---
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // --- Navbar Scroll Effect ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // --- Active Link Highlight ---
+        const sections = document.querySelectorAll('section');
+        const navLinksAll = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinksAll.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // --- Scroll Reveal Animation ---
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            revealElements.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+
+                if (elementTop < windowHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // --- Skill Bars Animation ---
+        const skillBars = document.querySelectorAll('.skill-bar');
+
+        const animateSkills = () => {
+            skillBars.forEach(bar => {
+                const barTop = bar.getBoundingClientRect().top;
+                if (barTop < window.innerHeight - 50) {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = width + '%';
+                }
+            });
+        };
+        window.addEventListener('scroll', animateSkills);
+        window.addEventListener('load', animateSkills);
+
+        // --- Tabs Logic ---
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from all
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // --- Form Submission (Demo) ---
+        const form = document.getElementById('contactForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Message envoyé avec succès ! (Démo)');
+            form.reset();
+        });
+    </script>
+</body>
+
+</html>
